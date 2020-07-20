@@ -1,0 +1,7 @@
+[ExtWeap_Pistol_9mm]
+ItemName="9mm pistol"
+ItemDescription="Just 9mm. Really just 9mm\nBut with infinite ammo. No reload. No mags. No defects. It's perfect."
+
+[ExtWeap_Pistol_MedicS]
+ItemName="Medic pistol"
+ItemDescription="Just medic pistol. Really just medic pistol\nBut with infinite ammo. No reload. No mags. No defects. It's perfect.\nCan heal also. Useful."

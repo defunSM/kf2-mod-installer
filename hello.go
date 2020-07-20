@@ -1,6 +1,5 @@
 package main
 
-
 import (
      "os"
      "io"
@@ -12,7 +11,7 @@ import (
      "github.com/gen2brain/go-unarr"
 )
 
-func downloadFiles() {
+func DownloadFiles(url string) {
 	newFile, err := os.Create("KFGame.7z")
      if err != nil {
           log.Fatal(err)
@@ -20,7 +19,6 @@ func downloadFiles() {
      defer newFile.Close()
 
      // HTTP GET request 
-     url := "https://drive.google.com/uc?export=download&id=1yQzYTafK3aLS0HMmDR7OJBUHsl7tuz9j"
      response, err := http.Get(url)
      if err != nil { panic(err) }
      defer response.Body.Close()
@@ -37,8 +35,8 @@ func downloadFiles() {
      log.Printf("Downloaded %d byte file.\n", numBytesWritten)
 }
 
-func createPath(path string) string {
-     // 
+func CreatePath(path string) string {
+     // creates a path given the contents from unarr list function
      currentDirectory, err := os.Getwd()
      if err != nil { panic(err) }
      filePaths := strings.Split(path, "/")
@@ -49,7 +47,7 @@ func createPath(path string) string {
      return completePath
 }
 
-func extractFiles() {
+func ExtractFiles() {
      
      a, err := unarr.NewArchive("KFGame.7z")
      if err != nil { panic(err) }
@@ -61,31 +59,28 @@ func extractFiles() {
           
           fmt.Println(file)
           err := a.EntryFor(file)
-          if err != nil {
-               panic(err)
-          }
+          if err != nil { panic(err) }
 
           // returns path as string that needs to be passed to MkdirAll
-          completePath := createPath(file)
-
+          completePath := CreatePath(file)
           _ = os.MkdirAll(completePath, os.ModePerm)
 
           currentEntry := make([]byte, 1000000)
           currentEntry, err = a.ReadAll()
-          if err != nil {
-               panic(err)
-          }
+          if err != nil { panic(err) }
+          
           // Create enmpty file
           newFile, err := os.Create(file)
           if err != nil { panic(err) }
           defer newFile.Close()
+          
           // Opens file
           bytefile, err := os.OpenFile(file, os.O_WRONLY, 0666)
           if err != nil { log.Fatal(err) }
           defer bytefile.Close()
+          
           // Creates a buffer for the bytes to be written to
           bufferedWriter := bufio.NewWriter(bytefile)
-
           bytesWritten, err := bufferedWriter.Write(currentEntry,)
           if err != nil { log.Fatal(err) }
 
@@ -94,23 +89,15 @@ func extractFiles() {
           fmt.Printf("Bytes: %d\n", bytesWritten)
 
      }
-
-
-     //currentDirectory, err := os.Getwd()
-     // result, err := zFile.Extract("/tmp")
-     // if err != nil {
-     //      panic(err)
-     // }
-     // for _, file := range result {
-     //      log.Printf(file)
-     // }
 }
 
-
+func installFiles() {
+     DownloadFiles("https://drive.google.com/uc?export=download&id=1yQzYTafK3aLS0HMmDR7OJBUHsl7tuz9j")
+     ExtractFiles() // uncompresses the file and extracts
+}
 
 func main() {
-     // Create output file
-     downloadFiles()
-     extractFiles()
-     
+
+     // Downloads files from a link
+     installFiles()
 }
