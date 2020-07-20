@@ -11,14 +11,14 @@ import (
      "github.com/gen2brain/go-unarr"
 )
 
-func DownloadFiles(url string) {
-	newFile, err := os.Create("KFGame.7z")
+func DownloadFiles(url string, filename string) {
+	newFile, err := os.Create(filename)
      if err != nil {
           log.Fatal(err)
      }
      defer newFile.Close()
 
-     // HTTP GET request 
+     //HTTP GET request 
      response, err := http.Get(url)
      if err != nil { panic(err) }
      defer response.Body.Close()
@@ -33,6 +33,8 @@ func DownloadFiles(url string) {
           log.Fatal(err)
      }
      log.Printf("Downloaded %d byte file.\n", numBytesWritten)
+     // Extracting into current working directory
+     ExtractFiles(filename)
 }
 
 func CreatePath(path string) string {
@@ -47,9 +49,9 @@ func CreatePath(path string) string {
      return completePath
 }
 
-func ExtractFiles() {
-     
-     a, err := unarr.NewArchive("KFGame.7z")
+func ExtractFiles(filename string) {
+     //opening the 7z file
+     a, err := unarr.NewArchive(filename)
      if err != nil { panic(err) }
      defer a.Close()
 
@@ -91,13 +93,25 @@ func ExtractFiles() {
      }
 }
 
-func installFiles() {
-     DownloadFiles("https://drive.google.com/uc?export=download&id=1yQzYTafK3aLS0HMmDR7OJBUHsl7tuz9j")
-     ExtractFiles() // uncompresses the file and extracts
+func readFirstLine(filepath string) ([]string){
+     
+     file, err := os.Open(filepath)
+     if err != nil { panic(err) }
+     defer file.Close()
+     
+     var filecontents []string
+
+     scanner := bufio.NewScanner(file)
+     for scanner.Scan() {
+          filecontents = append(filecontents, scanner.Text())
+     }
+     fmt.Println(filecontents)
+     return filecontents
 }
 
 func main() {
-
      // Downloads files from a link
-     installFiles()
+     // DownloadFiles("https://drive.google.com/uc?export=download&id=1yQzYTafK3aLS0HMmDR7OJBUHsl7tuz9j", "KFGame.7z")
+     var contents []string = readFirstLine("settings.txt")
+     DownloadFiles(contents[0], "KFGame.7z")
 }
