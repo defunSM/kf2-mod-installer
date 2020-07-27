@@ -12,6 +12,8 @@ import (
      "net/http"
      "archive/zip"
      "path/filepath"
+     "github.com/sqweek/dialog"
+     //"github.com/TheTitanrain/w32"
 )
 
 func DownloadFiles(url string, filename string) {
@@ -136,19 +138,23 @@ func WindowsCleanUp(filename string) {
         pathToZip := currentDirectory+"\\"+filename
         os.Remove(pathToZip)
         fmt.Println(pathToZip)
+
+        
         //cmd := exec.Command(`pause`)
         //cmd.Run()
      }
  }
 
-
  func main() {
      // Downloads files from a link
      // DownloadFiles("https://drive.google.com/uc?export=download&id=1yQzYTafK3aLS0HMmDR7OJBUHsl7tuz9j", "KFGame.7z")
      // var contents []string = readFirstLine("settings.txt")
-
-    filename := "KFGame.zip" 
-    DownloadFiles("https://drive.google.com/uc?export=download&id=1yQzYTafK3aLS0HMmDR7OJBUHsl7tuz9j", filename)
-    WindowsCleanUp(filename)
-     
+    switch answer := dialog.Message("%s", "Do want to install current server mods?").Title("KF2 Mod Installer?").YesNo(); answer {
+    case true:
+        filename := "KFGame.zip" 
+        DownloadFiles("https://drive.google.com/uc?export=download&id=1yQzYTafK3aLS0HMmDR7OJBUHsl7tuz9j", filename)
+        WindowsCleanUp(filename)
+    case false:
+        break
+    }   
 }
